@@ -3,7 +3,9 @@
 import numpy as np
 np.random.seed(0)
 
-def convolve(input, kernel, stride=(1, 1)):
+import convutils
+
+def convolve(input, kernel, padding=0, stride=(1, 1)):
     """
         A simple convolution function.
         For now the code just works like any other convolution.
@@ -25,6 +27,10 @@ def convolve(input, kernel, stride=(1, 1)):
 
     if (shape_input[0] < shape_kernel[0]) or (shape_input[1] < shape_kernel[1]):
         raise ValueError("Invalid dimension between input and kernel...")
+
+    if not convutils.is_valid_stride(shape_input, shape_kernel, padding, stride):
+        raise ValueError("Invalid stride :: {}".format(stride))
+
 
     # calculate the number of steps in both direction
     iterx = shape_input[1] - shape_kernel[1] + 1
