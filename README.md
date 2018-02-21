@@ -35,6 +35,20 @@ pipenv shell
 
 ------
 
+## Usage
+Start with `run.py` to test various implementations and dig deeper into the code.
+Feel free to experiment with the tests and code.  
+
+```bash
+python run.py
+```
+
+```bash
+pipenv run python run.py
+```
+
+------
+
 ## Implementation List
 - [x] Simple Convolution
 - [ ] Generic Convolution
