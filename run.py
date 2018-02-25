@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import numpy as np
-import matplotlib.pyplot as plt
+import tests
 
-from tests import test_convolution
 
 def main():
-    test_convolution.test()
+     tests.test_conv.run()
+    #tests.test_convolution.run()
+
 
 if __name__ == "__main__":
     main()
-
