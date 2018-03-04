@@ -7,12 +7,16 @@ class Layer(ABC):
         super().__init__()
 
     @abstractmethod
-    def feed_forward(self):
+    def feed_forward(self, X):
+        pass
+
+    @abstractmethod
+    def backpropagate(self, dout):
         pass
 
 
 class TestLayer(Layer):
-    def feed_forward(self):
+    def feed_forward(self, X):
         pass
 
 

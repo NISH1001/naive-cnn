@@ -18,46 +18,68 @@ class Conv2D(Layer):
             Constructor for  Conv2D Layer
 
             Args:
-                input_shape:    shape of individual input instance (height, width)
+                input_shape:    shape of individual input instance (channels, height, width)
                 kernel_size:   shape of the kernel for  performing convolution (height, width)
                 num_kernel:     number of kernles (number  of output channel it is)
                 padding:        number of boundary layer to pad the input (0 means no padding)
                 stride:         the step in both direction to take while performing convolution
         """
+
+        hout, wout = convutils.calculate_output_shape(input_shape[1:], kernel_size, padding, stride)
+        self.output_shape = num_kernel, hout, wout
         self.input_shape = input_shape
         self.kernel_size = kernel_size
         self.num_kernel = num_kernel
-        self.bias = np.zeros((self.num_kernel, 1))
         self.padding = padding
         self.stride = stride
-        self.kernels = np.ones( (num_kernel, input_shape[1] , kernel_size[1] , kernel_size[0]))
-        self.output_shape = convutils.calculate_output_shape(input_shape[-1 : 1 : -1], kernel_size, padding, stride)
-        #self.kernels = [np.random.random(self.output_shape) for i in range(num_kernel)]
-        #k, i, j = convutils.get_im2col_indices(input_shape, kernel_size[0], kernel_size[1], padding, stride)
-        X = np.random.randint(1, 4, input_shape )
-        print("Input shape : {}".format(X.shape))
-        print("Kernel shape : {}".format(kernel_size))
-        print("Num Kernel: {}".format(num_kernel))
-        print("Padding : {}".format(padding))
-        print("Stride: {}".format(stride))
-        print("Output shape : {}".format(self.output_shape))
-        start = time.time()
-        cols = convutils.im2col_indices(X,  kernel_size[0], kernel_size[1], padding, stride)
-        #print(cols.shape)
-        #print(X)
-        #print(cols)
-        wrow = self.kernels.reshape(self.num_kernel, -1)
-        #print(wrow.shape)
-        out = wrow @ cols
-        # print(out.shape)
-        out = out.reshape(self.num_kernel, self.output_shape[1], self.output_shape[0], self.input_shape[0])
-        out = out.transpose(3, 0, 1, 2)
-        print(time.time() - start)
+
+        # each row of this 4d matrix is a kernel with depth spanning to input channels
+        self.kernels = np.random.randint(1, 8, (num_kernel, input_shape[0], kernel_size[0], kernel_size[1]))
+        self.bias = np.zeros((self.num_kernel, 1))
+
+    def feed_forward(self, X):
+        print("X::\n{}".format(X))
+        self.X = X
+        self.X_cols = convutils.im2col_indices(X, self.kernel_size[0], self.kernel_size[1], self.padding, self.stride)
+        print("self.X_cols::\n{}".format(self.X_cols))
+        print("self.X_cols shape :: {}".format(self.X_cols.shape))
+
+        wcol = self.kernels.reshape(self.num_kernel, -1)
+        print("wcol shape:: {}".format(wcol.shape))
+
+        out = wcol @ self.X_cols + self.bias
+        #out = np.dot(wcol, self.X_cols) + self.bias
         print(out.shape)
+        out = out.reshape(self.num_kernel, self.output_shape[1], self.output_shape[2], X.shape[0])
+        out = out.transpose(3, 0, 1, 2)
+        return out
 
+    def backpropagate(self, delta):
+        delta_bias = np.sum(delta, axis=(0, 2, 3)).reshape(self.num_kernel, -1)
 
-    def feed_forward(self):
-        pass
+        delta_flat = delta.transpose(1, 2, 3, 0).reshape(self.num_kernel, -1)
+        delta_kernel = delta_flat @ self.X_cols.T
+        delta_kernel = delta_kernel.reshape(self.kernels.shape)
+
+        kernels_flat = self.kernels.reshape(self.num_kernel, -1)
+        delta_Xcol = kernels_flat.T @ delta_flat
+        dX = convutils.col2im_indices(delta_Xcol, self.X.shape,
+                                      self.kernel_size[0],
+                                      self.kernel_size[1],
+                                      self.padding,
+                                      self.stride
+                                    )
+        return dX, delta_kernel, delta_bias
+
+    def __repr__(self):
+        string = "Individual Input Shape :: {}\nKernel Shape :: {}\nPadding :: {}\nStride :: {}\nOutput Shape :: {}".format(
+            self.input_shape,
+            self.kernel_size,
+            self.padding,
+            self.stride,
+            (self.output_shape)
+        )
+        return string
 
 
 def main():
@@ -66,9 +88,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-

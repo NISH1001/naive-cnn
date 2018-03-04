@@ -51,7 +51,7 @@ pipenv run python run.py
 
 ## Implementation List
 - [x] Simple Convolution
-- [ ] Generic Convolution
+- [x] Generic Convolution
 - [ ] Feed-Forward Convolution Layer
 - [ ] Pooling Implementation
 - [ ] Feed-Forward Pooling Layer
