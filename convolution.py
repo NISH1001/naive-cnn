@@ -2,7 +2,6 @@
 
 import convutils
 import numpy as np
-np.random.seed(0)
 
 
 def im2col(input, kernel_shape, channel=1):
@@ -19,14 +18,14 @@ def convolve3d(input, kernel, depth=1, padding=0, stride=(1,1)):
     pass
 
 
-def convolve(input, kernel, padding=0, stride=(1, 1)):
+def convolve(data, kernel, padding=0, stride=(1, 1)):
     """
         A simple convolution function.
         For now the code just works like any other convolution.
         There is a lot of room for optimization.
 
         Args:
-            input:    This is the input matrix/array.
+            data:    This is the input matrix/array.
             kernel: This is the convolution filter/kernel to be applied
             stride: This is how much the kernel is shifted with each step
 
@@ -36,27 +35,20 @@ def convolve(input, kernel, padding=0, stride=(1, 1)):
         Raises:
             ValueError: Raises exception when dimensions are mismatched between input and the kernel
     """
-    shape_input = input.shape
+    shape_input = data.shape
     shape_kernel = kernel.shape
-
-    if (shape_input[0] < shape_kernel[0]) or (shape_input[1] < shape_kernel[1]):
-        raise ValueError("Invalid dimension between input and kernel...")
-
-    if not convutils.is_valid_stride(shape_input, shape_kernel, padding, stride):
-        raise ValueError("Invalid stride :: {}".format(stride))
-
-    # calculate the number of steps in both direction
-    wout = shape_input[1] - shape_kernel[1] + 1
-    hout = shape_input[0] - shape_kernel[0] + 1
-
+    hout, wout = convutils.calculate_output_shape(shape_input, shape_kernel, padding, stride)
     result = np.zeros((hout, wout))
 
+    h_padded, w_padded = shape_input[0] + 2 * padding, shape_input[1] + 2 * padding
+    if padding:
+        data = np.pad(data, pad_width=padding, mode='constant')
+
     # for each row apply convolution accordingly
-    for r in range(0, hout, stride[1]):
-        for c in range(0, wout, stride[0]):
-            input_sliced = input[r : r + shape_kernel[0], c: c + shape_kernel[1]]
-            res = np.sum(input_sliced * kernel)
-            result[(r, c)] = res
+    for r in range(0, hout, stride[0]):
+        for c in range(0, wout, stride[1]):
+            input_sliced = data[r : r + shape_kernel[0], c: c + shape_kernel[1]]
+            result[(r, c)] = np.sum(input_sliced * kernel)
     return result
 
 

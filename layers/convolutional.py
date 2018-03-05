@@ -4,6 +4,7 @@ import convutils
 import numpy as np
 import time
 
+from convolution import convolve
 from layers.layer import Layer
 
 
@@ -80,6 +81,36 @@ class Conv2D(Layer):
             (self.output_shape)
         )
         return string
+
+
+class ConvMono(Layer):
+    def __init__(self, input_shape, kernel_size,
+                 padding=1, stride=(1, 1)):
+        self.input_shape = input_shape
+        self.kernel_size = kernel_size
+        self.num_kernel = 1
+        hout, wout = convutils.calculate_output_shape(input_shape, kernel_size, padding, stride)
+        self.output_shape = (hout, wout)
+        self.kernel = np.random.random(kernel_size)
+        self.bias = np.zeros((self.num_kernel, 1))
+        self.padding = padding
+        self.stride = stride
+
+    def feed_forward(self, X):
+        self.X = X
+        out = convolve(X, self.kernel, padding=self.padding, stride=self.stride) + self.bias
+        return out
+
+    def backpropagate(self, dout):
+        dX = np.zeros_like(self.X)
+        dW = np.zeros_like(self.kernel)
+        h, w = dout.shape
+        kh, kw = self.kernel.shape
+        for r in range(0, h, self.stride[0]):
+            for c in range(0, w, self.stride[1]):
+                dX[r : r + kh, c : c + kw ] += self.kernel * dout[(r, c)]
+                dW += self.X[r : r + kh, c : c + kw] * dout[(r, c)]
+        return dX, dW
 
 
 def main():
