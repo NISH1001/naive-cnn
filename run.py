@@ -7,8 +7,9 @@ np.random.seed(0)
 
 
 def main():
-     tests.test_conv.run()
+     # tests.test_conv.run()
     # tests.test_convolution.run()
+    tests.cnn_runner.main()
 
 
 if __name__ == "__main__":

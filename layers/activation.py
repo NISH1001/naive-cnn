@@ -9,10 +9,13 @@ class Sigmoid(Layer):
         pass
 
     def feed_forward(self, X):
-        return 1/(1 + np.exp(-X))
+        out = 1/(1 + np.exp(-X))
+        self.out = out
+        return out
 
     def backpropagate(self, dout):
-        pass
+        dX = dout * self.out * (1 - self.out)
+        return dX, []
 
 
 def main():
