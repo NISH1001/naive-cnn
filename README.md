@@ -52,11 +52,12 @@ pipenv run python run.py
 ## Implementation List
 - [x] Simple Convolution
 - [x] Generic Convolution
-- [ ] Feed-Forward Convolution Layer
+- [x] Feed-Forward Convolution Layer
 - [ ] Pooling Implementation
 - [ ] Feed-Forward Pooling Layer
-- [ ] Backpropation in Convolution Layer
+- [x] Backpropation in Convolution Layer
 - [ ] Backpropation in Pooling Layer
-- [ ] Fully Connected Layer
-- [ ] Backpropation in Fully Connected Layer
+- [x] Fully Connected Layer
+- [x] Backpropation in Fully Connected Layer
+- [x] Create basic Deep Learning Model
 

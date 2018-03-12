@@ -7,11 +7,14 @@ class Model:
         self.layers = []
 
     def add_layer(self, layer):
+        # if self.layers:
+            # layer.input_shape = self.layers[-1].output_shape
         self.layers.append(layer)
 
     def compile(self):
-        for layer in self.layers[1:]:
-            print(layer)
+        for i, layer in enumerate(self.layers[1:]):
+            if layer.input_shape != self.layers[i].output_shape:
+                raise ValueError("Shape mismatch. Starting layer index : {}".format(i))
 
     def fit(self, X, Y):
         predicted = self.feed_forward(X)
@@ -22,7 +25,6 @@ class Model:
         for layer in self.layers:
             inp = layer.feed_forward(inp)
         return inp
-
 
     def loss_der(self, predicted, target):
         return (predicted-target)

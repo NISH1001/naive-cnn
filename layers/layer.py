@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 class Layer(ABC):
     def __init__(self):
         super().__init__()
+        self.input_shape = None
+        self.output_shape = None
 
     @abstractmethod
     def feed_forward(self, X):
@@ -18,7 +20,6 @@ class Layer(ABC):
 class TestLayer(Layer):
     def feed_forward(self, X):
         pass
-
 
 
 def main():

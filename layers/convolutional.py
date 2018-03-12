@@ -13,7 +13,7 @@ class Conv2D(Layer):
         A 2D Convolutional Layer where convolution is applied to input data
         using the available kernels.
     """
-    def __init__(self, input_shape, kernel_size, num_kernel=1,
+    def __init__(self, input_shape=None, kernel_size=None, num_kernel=1,
                  padding=1, stride=(1, 1)):
         """
             Constructor for  Conv2D Layer
@@ -27,7 +27,7 @@ class Conv2D(Layer):
         """
 
         hout, wout = convutils.calculate_output_shape(input_shape[1:], kernel_size, padding, stride)
-        self.output_shape = num_kernel, hout, wout
+        self.output_shape = (num_kernel, hout, wout)
         self.input_shape = input_shape
         self.kernel_size = kernel_size
         self.num_kernel = num_kernel
@@ -77,7 +77,7 @@ class Conv2D(Layer):
             self.kernel_size,
             self.padding,
             self.stride,
-            (self.output_shape)
+            self.output_shape
         )
         return string
 

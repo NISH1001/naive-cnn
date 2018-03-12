@@ -5,23 +5,26 @@ from layers.layer import Layer
 
 
 class Flatten(Layer):
-    def __init__(self):
+    def __init__(self, input_shape=None):
+        self.input_shape = input_shape
+        self.output_shape = (np.prod(self.input_shape), )
         self.params = []
 
     def feed_forward(self, X):
-        self.input_shape = X.shape
-        self.output_shape = (self.input_shape[0], -1)
-        out = X.ravel().reshape(self.output_shape)
-        self.output_shape = out.shape
+        output_shape = (X.shape[0], -1)
+        out = X.ravel().reshape(output_shape)
         return out
 
     def backpropagate(self, grad_out):
         return grad_out.reshape(self.input_shape), []
 
 class Dense(Layer):
-    def __init__(self, input_size, output_size):
-        self.synapse = np.random.random((input_size, output_size))
-        self.bias = np.random.random((1, output_size))
+    def __init__(self, neurons, input_shape=None):
+        self.neurons = neurons
+        self.input_shape = input_shape
+        self.output_shape =(self.neurons, )
+        self.synapse = np.random.random((self.input_shape[0], neurons))
+        self.bias = np.random.random((1, neurons))
 
     def feed_forward(self, X):
         self.X = X
